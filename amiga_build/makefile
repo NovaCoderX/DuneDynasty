@@ -23,9 +23,27 @@ RM := rm -rf
 -include src/crashlog/subdir.mk
 -include src/codec/subdir.mk
 -include src/audio/audlib/subdir.mk
+-include src/audio/adl/subdir.mk
 -include src/audio/subdir.mk
 -include src/subdir.mk
+-include objects.mk
+
 ifneq ($(MAKECMDGOALS),clean)
+ifneq ($(strip $(CC_DEPS)),)
+-include $(CC_DEPS)
+endif
+ifneq ($(strip $(C++_DEPS)),)
+-include $(C++_DEPS)
+endif
+ifneq ($(strip $(C_UPPER_DEPS)),)
+-include $(C_UPPER_DEPS)
+endif
+ifneq ($(strip $(CXX_DEPS)),)
+-include $(CXX_DEPS)
+endif
+ifneq ($(strip $(CPP_DEPS)),)
+-include $(CPP_DEPS)
+endif
 ifneq ($(strip $(C_DEPS)),)
 -include $(C_DEPS)
 endif
@@ -53,10 +71,10 @@ all: main-build
 main-build: DuneDynasty
 
 # Tool invocations
-DuneDynasty: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
+DuneDynasty: $(OBJS) $(USER_OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
-	@echo 'Invoking: Cross GCC Linker'
-	m68k-amigaos-gcc -s -noixemul -o "DuneDynasty" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Invoking: Cross G++ Linker'
+	m68k-amigaos-g++ -L../allegro5_wrapper/lib -s -noixemul -o "DuneDynasty" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

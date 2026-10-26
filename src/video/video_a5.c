@@ -13,7 +13,14 @@
  */
 
 #include <assert.h>
+#include <allegro5/allegro.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_primitives.h>
 
+/* The stencil effects talk to OpenGL directly, so they are only built
+ * when Allegro itself has OpenGL (not the case for the Amiga SDL2 build).
+ */
+#ifdef ALLEGRO_CFG_OPENGL
 #ifdef __APPLE__
 # include <OpenGL/gl.h>
 #else
@@ -23,10 +30,7 @@
 #  include <GL/gl.h>
 # endif /* __PANDORA__ */
 #endif /* __APPLE__ */
-
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_image.h>
-#include <allegro5/allegro_primitives.h>
+#endif /* ALLEGRO_CFG_OPENGL */
 
 #ifdef ALLEGRO_WINDOWS
 #include <allegro5/allegro_direct3d.h>
@@ -811,7 +815,7 @@ VideoA5_TickDissolve_LockedBitmap(FadeInAux *aux)
 }
 #endif
 
-#if 1
+#ifdef ALLEGRO_CFG_OPENGL
 /* Requires OpenGL, stencil buffer. */
 static void
 VideoA5_InitDissolve_GLStencil(ALLEGRO_BITMAP *src, FadeInAux *aux)
@@ -1031,9 +1035,11 @@ VideoA5_InitFadeInSprite(ALLEGRO_BITMAP *src, int x, int y, int w, int h, bool f
 	aux->height = h;
 
 	switch (g_graphics_driver) {
+#ifdef ALLEGRO_CFG_OPENGL
 		case GRAPHICS_DRIVER_OPENGL:
 			VideoA5_InitDissolve_GLStencil(src, aux);
 			break;
+#endif
 
 #ifdef ALLEGRO_WINDOWS
 		case GRAPHICS_DRIVER_DIRECT3D:
@@ -1053,9 +1059,11 @@ void
 Video_DrawFadeIn(const FadeInAux *aux)
 {
 	switch (g_graphics_driver) {
+#ifdef ALLEGRO_CFG_OPENGL
 		case GRAPHICS_DRIVER_OPENGL:
 			VideoA5_DrawDissolve_GLStencil(aux);
 			break;
+#endif
 
 #ifdef ALLEGRO_WINDOWS
 		case GRAPHICS_DRIVER_DIRECT3D:
@@ -1080,9 +1088,11 @@ Video_TickFadeIn(FadeInAux *aux)
 		return true;
 
 	switch (g_graphics_driver) {
+#ifdef ALLEGRO_CFG_OPENGL
 		case GRAPHICS_DRIVER_OPENGL:
 			VideoA5_TickDissolve_GLStencil(aux);
 			break;
+#endif
 
 #ifdef ALLEGRO_WINDOWS
 		case GRAPHICS_DRIVER_DIRECT3D:
@@ -2248,7 +2258,7 @@ VideoA5_DrawBlur_DestMinusSrc(ALLEGRO_BITMAP *brush, int x, int y, int blurx)
 }
 #endif
 
-#if 1
+#ifdef ALLEGRO_CFG_OPENGL
 /* Requires OpenGL, stencil buffer. */
 static void
 VideoA5_DrawBlur_GLStencil(ALLEGRO_BITMAP *brush, int x, int y, int blurx)
@@ -2338,9 +2348,11 @@ VideoA5_DrawShape(enum ShapeID shapeID, enum HouseType houseID, int x, int y, in
 		ALLEGRO_BITMAP *brush = s_shape[shapeID][houseID];
 
 		switch (g_graphics_driver) {
+#ifdef ALLEGRO_CFG_OPENGL
 			case GRAPHICS_DRIVER_OPENGL:
 				VideoA5_DrawBlur_GLStencil(brush, x, y, s_variable_60[effect]);
 				break;
+#endif
 
 #ifdef ALLEGRO_WINDOWS
 			case GRAPHICS_DRIVER_DIRECT3D:
@@ -2351,6 +2363,8 @@ VideoA5_DrawShape(enum ShapeID shapeID, enum HouseType houseID, int x, int y, in
 			default:
 				/* VideoA5_DrawBlur_SeparateBlender(brush, x, y, s_variable_60[effect]); */
 				/* VideoA5_DrawBlur_DestMinusSrc(brush, x, y, s_variable_60[effect]); */
+				VARIABLE_NOT_USED(brush);
+				VARIABLE_NOT_USED(s_variable_60[effect]);
 				break;
 		}
 	}
