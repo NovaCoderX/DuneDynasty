@@ -1001,7 +1001,13 @@ static bool Unknown_25C4_000E(void)
 	return true;
 }
 
+#if defined(__AMIGA__)
+/* src/os/amiga_main.c owns main(): it checks the stack and records the
+ * program's directory before calling this. */
+int dune_main(int argc, char **argv)
+#else
 int main(int argc, char **argv)
+#endif
 {
 	VARIABLE_NOT_USED(argc);
 	VARIABLE_NOT_USED(argv);

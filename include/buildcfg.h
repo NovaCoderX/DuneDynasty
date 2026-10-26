@@ -7,7 +7,8 @@
 
 #define DUNE_DYNASTY_VERSION "dd1.5.7"
 
-#define DUNE_DATA_DIR "PROGDIR:"
+/* Unused on Amiga: src/os/amiga_main.c supplies the game directory. */
+#define DUNE_DATA_DIR "."
 
 /* #undef WITH_ACODEC */     /* FLAC/Ogg Vorbis music: too heavy for 68k. */
 #define WITH_AUD             /* Dune 2000 AUD music. */

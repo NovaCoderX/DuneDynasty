@@ -505,6 +505,17 @@ Config_GetMusicVolume(ALLEGRO_CONFIG *config, const char *category, const char *
 static void
 ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
 {
+#if defined(__AMIGA__)
+	/* Data, config file and saves all live in the directory the game
+	 * runs from, which src/os/amiga_main.c records. */
+	char filename[1024];
+
+	snprintf(g_dune_data_dir, sizeof(g_dune_data_dir), "%s", g_amiga_path);
+	snprintf(g_personal_data_dir, sizeof(g_personal_data_dir), "%s", g_amiga_path);
+
+	snprintf(filename, sizeof(filename), "%s/%s", g_personal_data_dir, CONFIG_FILENAME);
+	s_configFile = al_load_config_file(filename);
+#else
 	ALLEGRO_PATH *dune_data_path = al_get_standard_path(ALLEGRO_RESOURCES_PATH);
 	ALLEGRO_PATH *user_data_path = al_get_standard_path(ALLEGRO_USER_DATA_PATH);
 	ALLEGRO_PATH *user_settings_path = al_get_standard_path(ALLEGRO_USER_SETTINGS_PATH);
@@ -566,6 +577,8 @@ ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
 	al_destroy_path(dune_data_path);
 	al_destroy_path(user_data_path);
 	al_destroy_path(user_settings_path);
+#endif
+
 	fprintf(stdout, "Dune data directory: %s\n", g_dune_data_dir);
 	fprintf(stdout, "Personal data directory: %s\n", g_personal_data_dir);
 }
@@ -667,7 +680,7 @@ GameOptions_Load(void)
 		if (music_set <= MUSICSET_FLUIDSYNTH) {
 			char filename[1024];
 
-			snprintf(filename, sizeof(filename), "%smusic/music.cfg", g_dune_data_dir);
+			snprintf(filename, sizeof(filename), "%s/music/music.cfg", g_dune_data_dir);
 			config = al_load_config_file(filename);
 
 			snprintf(category, sizeof(category), "%s", g_table_music_set[music_set].prefix);
@@ -675,7 +688,7 @@ GameOptions_Load(void)
 		else if (g_table_music_set[music_set].enable || music_set == default_music_pack) {
 			char filename[1024];
 
-			snprintf(filename, sizeof(filename), "%smusic/%s/volume.cfg", g_dune_data_dir, g_table_music_set[music_set].prefix);
+			snprintf(filename, sizeof(filename), "%s/music/%s/volume.cfg", g_dune_data_dir, g_table_music_set[music_set].prefix);
 			config = al_load_config_file(filename);
 		}
 

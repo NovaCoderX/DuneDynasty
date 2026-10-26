@@ -21,6 +21,13 @@ starts, then exits in `al_install_system()`. See
 
 ### Build configuration
 
+`src/os/amiga_main.c` provides `main()`. It refuses to start with less than
+300,000 bytes of stack, stores the game's directory in `g_amiga_path`
+(the current directory from the Shell, the icon's directory from
+Workbench), then calls the game's own entry point, renamed `dune_main()`
+on Amiga. The game data, `dunedynasty.cfg` and saves are all read from and
+written to that directory.
+
 `include/buildcfg.h` replaces the CMake-generated header: AUD music on;
 FluidSynth, MP3 (libmad) and FLAC/Ogg off. MIDI goes through the
 `src/audio/midi.h` interface (`midi_init`, `midi_send`, ...); `midi_none.c`

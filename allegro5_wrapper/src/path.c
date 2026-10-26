@@ -26,11 +26,6 @@ const char *al_path_cstr(const ALLEGRO_PATH *path, char delim)
    return "";
 }
 
-void al_replace_path_component(ALLEGRO_PATH *path, int i, const char *s)
-{
-   A5_STUB();
-}
-
 void al_set_path_filename(ALLEGRO_PATH *path, const char *filename)
 {
    A5_STUB();

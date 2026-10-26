@@ -1,7 +1,7 @@
 # Allegro 5 wrapper for Amiga 68k (stubbed)
 
 A static library, `liballegro5.a`, that provides the part of the Allegro 5
-API Dune Dynasty 1.5.7 links against: 151 functions. The plan is for these to call
+API the Amiga build of Dune Dynasty 1.5.7 links against: 149 functions. The plan is for these to call
 through to SDL2 (SDL2-NovaMesa) on AmigaOS 3.x with RTG. For now every
 function is a stub, so the game compiles and links while the real
 implementation is written one module at a time.
@@ -69,7 +69,7 @@ SDL2 and a fake value would silently corrupt the caller's state:
 
 | File | Header(s) | Functions |
 | --- | --- | --- |
-| `system.c` | system.h, altime.h, memory.h | 5 |
+| `system.c` | system.h, altime.h, memory.h | 4 |
 | `display.c` | display.h, drawing.h, blender.h | 18 |
 | `bitmap.c` | bitmap.h, bitmap_lock.h, bitmap_io.h | 15 |
 | `bitmap_draw.c` | bitmap_draw.h | 8 |
@@ -80,7 +80,7 @@ SDL2 and a fake value would silently corrupt the caller's state:
 | `mouse.c` | mouse.h, mouse_cursor.h | 8 |
 | `timer.c` | timer.h | 7 |
 | `threads.c` | threads.h | 5 |
-| `path.c` | path.h | 10 |
+| `path.c` | path.h | 9 |
 | `config.c` | config.h | 7 |
 | `file.c` | file.h | 9 |
 | `fshook.c` | fshook.h | 8 |
@@ -91,6 +91,8 @@ SDL2 and a fake value would silently corrupt the caller's state:
 
 `al_is_sub_bitmap` is only called inside `assert()`, so a release build
 (`-DNDEBUG`) does not need it; it is stubbed anyway so debug builds link.
+`al_get_standard_path` is not needed at all: on the Amiga the game takes
+its directory from `g_amiga_path` (see `src/os/amiga_main.c`).
 
 If Dune Dynasty starts calling a new Allegro function, the link fails with
 `undefined reference to 'al_...'`. Add the function to the matching

@@ -4,14 +4,17 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/os/amiga_main.c \
 ../src/os/endian.c \
 ../src/os/error.c 
 
 C_DEPS += \
+./src/os/amiga_main.d \
 ./src/os/endian.d \
 ./src/os/error.d 
 
 OBJS += \
+./src/os/amiga_main.o \
 ./src/os/endian.o \
 ./src/os/error.o 
 
@@ -28,7 +31,7 @@ src/os/%.o: ../src/os/%.c src/os/subdir.mk
 clean: clean-src-2f-os
 
 clean-src-2f-os:
-	-$(RM) ./src/os/endian.d ./src/os/endian.o ./src/os/error.d ./src/os/error.o
+	-$(RM) ./src/os/amiga_main.d ./src/os/amiga_main.o ./src/os/endian.d ./src/os/endian.o ./src/os/error.d ./src/os/error.o
 
 .PHONY: clean-src-2f-os
 

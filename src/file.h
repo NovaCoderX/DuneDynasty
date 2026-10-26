@@ -42,6 +42,11 @@ typedef struct FileInfo {
 extern char g_dune_data_dir[1024];
 extern char g_personal_data_dir[1024];
 
+#if defined(__AMIGA__)
+/* The directory the game runs from, set by src/os/amiga_main.c. */
+extern char g_amiga_path[];
+#endif
+
 extern void FileHash_Init(void);
 extern FileInfo *FileHash_Store(const char *key);
 extern unsigned int FileHash_FindIndex(const char *key);

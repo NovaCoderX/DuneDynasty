@@ -15,12 +15,6 @@ void al_set_app_name(const char *app_name)
    A5_STUB();
 }
 
-ALLEGRO_PATH *al_get_standard_path(int id)
-{
-   A5_STUB();
-   return NULL;
-}
-
 double al_get_time(void)
 {
    A5_STUB();
