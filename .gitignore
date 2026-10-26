@@ -1,0 +1,6 @@
+# Build output
+*.o
+*.d
+/amiga_build/DuneDynasty
+/allegro5_wrapper/obj/
+/allegro5_wrapper/lib/

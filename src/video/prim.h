@@ -1,8 +1,7 @@
 #ifndef VIDEO_PRIM_H
 #define VIDEO_PRIM_H
 
-#include "astdint.h"
-
+#include "types.h"
 
 extern void Prim_Line(float x1, float y1, float x2, float y2, uint8 c, float thickness);
 extern void Prim_Hline(int x1, int y, int x2, uint8 c);

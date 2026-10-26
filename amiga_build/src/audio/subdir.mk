@@ -3,31 +3,26 @@
 ################################################################################
 
 # Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += \
+../src/audio/audio_a5.cpp 
+
 C_SRCS += \
-../src/audio/allegro_mad.c \
 ../src/audio/audio.c \
-../src/audio/midi_alsa.c \
 ../src/audio/midi_none.c \
-../src/audio/midi_osx.c \
-../src/audio/midi_win32.c \
 ../src/audio/mt32mpu.c 
 
+CPP_DEPS += \
+./src/audio/audio_a5.d 
+
 C_DEPS += \
-./src/audio/allegro_mad.d \
 ./src/audio/audio.d \
-./src/audio/midi_alsa.d \
 ./src/audio/midi_none.d \
-./src/audio/midi_osx.d \
-./src/audio/midi_win32.d \
 ./src/audio/mt32mpu.d 
 
 OBJS += \
-./src/audio/allegro_mad.o \
 ./src/audio/audio.o \
-./src/audio/midi_alsa.o \
+./src/audio/audio_a5.o \
 ./src/audio/midi_none.o \
-./src/audio/midi_osx.o \
-./src/audio/midi_win32.o \
 ./src/audio/mt32mpu.o 
 
 
@@ -35,7 +30,14 @@ OBJS += \
 src/audio/%.o: ../src/audio/%.c src/audio/subdir.mk
 	@echo 'Building file: $<'
 	@echo 'Invoking: Cross GCC Compiler'
-	m68k-amigaos-gcc -DNDEBUG -I/opt/amiga/include/allegro5/platform -I"/home/nova/Development/eclipse-workspace/DuneDynasty/include" -I"/home/nova/Development/eclipse-workspace/DuneDynasty/src" -O2 -fno-optimize-sibling-calls -Wall -c -fmessage-length=0 -m68060 -noixemul -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	m68k-amigaos-gcc -DNDEBUG -I../include -I../allegro5_wrapper/include -O2 -fno-optimize-sibling-calls -Wall -c -fmessage-length=0 -m68060 -noixemul -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+src/audio/%.o: ../src/audio/%.cpp src/audio/subdir.mk
+	@echo 'Building file: $<'
+	@echo 'Invoking: Cross G++ Compiler'
+	m68k-amigaos-g++ -DNDEBUG -I../include -I../allegro5_wrapper/include -O2 -fno-optimize-sibling-calls -Wall -c -fmessage-length=0 -m68060 -noixemul -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
@@ -43,7 +45,7 @@ src/audio/%.o: ../src/audio/%.c src/audio/subdir.mk
 clean: clean-src-2f-audio
 
 clean-src-2f-audio:
-	-$(RM) ./src/audio/allegro_mad.d ./src/audio/allegro_mad.o ./src/audio/audio.d ./src/audio/audio.o ./src/audio/midi_alsa.d ./src/audio/midi_alsa.o ./src/audio/midi_none.d ./src/audio/midi_none.o ./src/audio/midi_osx.d ./src/audio/midi_osx.o ./src/audio/midi_win32.d ./src/audio/midi_win32.o ./src/audio/mt32mpu.d ./src/audio/mt32mpu.o
+	-$(RM) ./src/audio/audio.d ./src/audio/audio.o ./src/audio/audio_a5.d ./src/audio/audio_a5.o ./src/audio/midi_none.d ./src/audio/midi_none.o ./src/audio/mt32mpu.d ./src/audio/mt32mpu.o
 
 .PHONY: clean-src-2f-audio
 
