@@ -107,11 +107,14 @@ as follows:
   because SDL2-NovaMesa is built without `SDL_VIDEO_OPENGL`. Dune Dynasty's
   `video_a5.c` tests `ALLEGRO_CFG_OPENGL` to decide whether to build its GL
   stencil effects.
-- `ALLEGRO_CFG_PTHREADS_TLS` is off: there are no pthreads under libnix.
-- The `ALLEGRO_HAVE_*` entries for Linux and macOS facilities that libnix
-  lacks are off: `sys/utsname.h`, `OSAtomic.h`, `mmap`, `mprotect`,
-  `sched_yield`, `sysconf`, `mkstemp`, `fseeko`/`ftello`, `strerror_r`.
-  These only matter when compiling Allegro's own sources.
+- `ALLEGRO_CFG_PTHREADS_TLS` is off: the wrapper does not use Allegro's
+  thread-local state code (`tls.c`).
+- `ALLEGRO_HAVE_*` entries were checked against the libnix headers and
+  libraries in the GCC 13.3 toolchain. Off: `OSAtomic.h` (macOS only),
+  `mmap` and `mprotect` (no `sys/mman.h`), and `sched_yield`, which is
+  declared but has no implementation. libnix does provide `mkstemp`,
+  `fseeko`/`ftello`, `strerror_r`, `sysconf` and `uname`, so those stay on.
+  These settings only matter when compiling Allegro's own sources.
 - Unchanged: `ALLEGRO_SDL` and `ALLEGRO_BIG_ENDIAN`.
 
 ## Next steps

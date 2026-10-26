@@ -55,7 +55,7 @@
 #define ALLEGRO_HAVE_SYS_STAT_H
 #define ALLEGRO_HAVE_SYS_TIME_H
 #define ALLEGRO_HAVE_TIME_H
-/* #undef ALLEGRO_HAVE_SYS_UTSNAME_H */
+#define ALLEGRO_HAVE_SYS_UTSNAME_H
 #define ALLEGRO_HAVE_SYS_TYPES_H
 /* #undef ALLEGRO_HAVE_OSATOMIC_H */
 /* #undef ALLEGRO_HAVE_SYS_INOTIFY_H */
@@ -63,14 +63,14 @@
 
 /* Define to 1 if the corresponding functions are available. */
 /* #undef ALLEGRO_HAVE_GETEXECNAME */
-/* #undef ALLEGRO_HAVE_MKSTEMP */
+#define ALLEGRO_HAVE_MKSTEMP
 /* #undef ALLEGRO_HAVE_MMAP */
 /* #undef ALLEGRO_HAVE_MPROTECT */
-/* #undef ALLEGRO_HAVE_SCHED_YIELD */
-/* #undef ALLEGRO_HAVE_SYSCONF */
-/* #undef ALLEGRO_HAVE_FSEEKO */
-/* #undef ALLEGRO_HAVE_FTELLO */
-/* #undef ALLEGRO_HAVE_STRERROR_R */
+/* #undef ALLEGRO_HAVE_SCHED_YIELD */    /* declared, but not in libnix */
+#define ALLEGRO_HAVE_SYSCONF
+#define ALLEGRO_HAVE_FSEEKO
+#define ALLEGRO_HAVE_FTELLO
+#define ALLEGRO_HAVE_STRERROR_R
 /* #undef ALLEGRO_HAVE_STRERROR_S */
 #define ALLEGRO_HAVE_VA_COPY
 
