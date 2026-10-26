@@ -13,5 +13,7 @@ Dune Dynasty is a continuation of the classic real-time strategy game Dune II by
 * `allegro5_wrapper/` builds `liballegro5.a`: the Allegro 5.2.11.3 API that Dune Dynasty uses, currently stubs, to be implemented on SDL2.
 * `amiga_build/` is the Eclipse CDT managed build of the game (`make` from that directory).
 * `src/os/amiga_main.c` owns `main()` (stack check, `g_amiga_path`); the game's entry point is `dune_main()` on Amiga. Data paths are joined as `"%s/name"` on `g_amiga_path`, so never build them with a trailing or doubled `/` (AmigaDOS reads `//` as the parent directory).
+* MIDI music: `src/audio/midi_camd.c` implements `src/audio/midi.h` on camd.library (headers from `make camd` in the toolchain build tree).
+* `DuneLegacy/` and `OpenDUNE/` are the author's earlier 68k ports, kept for reference only; they are not part of the build.
 * Never put `src/` on the include path: `src/string.h` shadows the C library's `<string.h>`.
 * `AMIGA` is predefined and `int32_t` is `long` on this target; use the `uint32`/`int32` typedefs from `include/types.h`.

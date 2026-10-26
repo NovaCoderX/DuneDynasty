@@ -8,7 +8,7 @@ CPP_SRCS += \
 
 C_SRCS += \
 ../src/audio/audio.c \
-../src/audio/midi_none.c \
+../src/audio/midi_camd.c \
 ../src/audio/mt32mpu.c 
 
 CPP_DEPS += \
@@ -16,13 +16,13 @@ CPP_DEPS += \
 
 C_DEPS += \
 ./src/audio/audio.d \
-./src/audio/midi_none.d \
+./src/audio/midi_camd.d \
 ./src/audio/mt32mpu.d 
 
 OBJS += \
 ./src/audio/audio.o \
 ./src/audio/audio_a5.o \
-./src/audio/midi_none.o \
+./src/audio/midi_camd.o \
 ./src/audio/mt32mpu.o 
 
 
@@ -45,7 +45,7 @@ src/audio/%.o: ../src/audio/%.cpp src/audio/subdir.mk
 clean: clean-src-2f-audio
 
 clean-src-2f-audio:
-	-$(RM) ./src/audio/audio.d ./src/audio/audio.o ./src/audio/audio_a5.d ./src/audio/audio_a5.o ./src/audio/midi_none.d ./src/audio/midi_none.o ./src/audio/mt32mpu.d ./src/audio/mt32mpu.o
+	-$(RM) ./src/audio/audio.d ./src/audio/audio.o ./src/audio/audio_a5.d ./src/audio/audio_a5.o ./src/audio/midi_camd.d ./src/audio/midi_camd.o ./src/audio/mt32mpu.d ./src/audio/mt32mpu.o
 
 .PHONY: clean-src-2f-audio
 
