@@ -9,7 +9,8 @@
 
 CC       := m68k-amigaos-gcc
 AR       := m68k-amigaos-ar
-CPPFLAGS := -Iinclude -DALLEGRO_STUB_TRACE
+SDL2_CFLAGS ?= -I/opt/amiga/include/SDL2
+CPPFLAGS := -Iinclude $(SDL2_CFLAGS) -DALLEGRO_STUB_TRACE
 CFLAGS   := -O2 -fno-optimize-sibling-calls -Wall -fmessage-length=0 -m68060 -noixemul
 PREFIX   ?= /opt/amiga
 
