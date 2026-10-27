@@ -30,6 +30,13 @@ Workbench), then calls the game's own entry point, renamed `dune_main()`
 on Amiga. The game data, `dunedynasty.cfg` and saves are all read from and
 written to that directory.
 
+`Error()` and `Warning()` (`src/os/error.c`) print to stderr as upstream,
+and on Amiga also write to `dunedynasty.log` in the game directory. The log
+is created by a run's first error or warning, starts with the date, and is
+flushed after every message. Messages the game prints with `fprintf()`
+directly, and the Allegro wrapper's stub trace, only go to the console:
+the Shell window, or the window libnix opens for a Workbench start.
+
 `include/buildcfg.h` replaces the CMake-generated header: AUD music on;
 FluidSynth, MP3 (libmad) and FLAC/Ogg off.
 
