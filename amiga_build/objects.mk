@@ -4,5 +4,5 @@
 
 USER_OBJS :=
 
-LIBS := -lallegro5 -lm
+LIBS := -lallegro5 -lSDL2 -lm
 

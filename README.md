@@ -8,15 +8,16 @@ SDL2 through a small Allegro 5 wrapper library.
 
 Needs m68k-amigaos-gcc 13.3 from
 [AmigaPorts/m68k-amigaos-gcc](https://github.com/AmigaPorts/m68k-amigaos-gcc)
-(libnix runtime).
+(libnix runtime) and the static SDL2 library from
+[SDL2-NovaMesa](https://github.com/NovaCoderX/SDL2-NovaMesa).
 
 ```
 cd allegro5_wrapper && make     # lib/liballegro5.a (stubbed Allegro 5)
 cd ../amiga_build && make       # amiga_build/DuneDynasty
 ```
 
-The Allegro 5 library is currently all stubs: the executable links and
-starts, then exits in `al_install_system()`. See
+The Allegro 5 library is being implemented on SDL2 one module at a time;
+system, timers and event queues work, the rest are still stubs. See
 [allegro5_wrapper/README.md](allegro5_wrapper/README.md).
 
 ### Build configuration
@@ -85,5 +86,9 @@ makefiles from the project settings. To get the same build:
     library's `<string.h>`.
   - Defines: `NDEBUG`
   - Flags: `-O2 -fno-optimize-sibling-calls -Wall -m68060 -noixemul`
-- Linker: flags `-s -noixemul`, libraries `allegro5` and `m`, library path
-  `allegro5_wrapper/lib`.
+- Linker: flags `-s -noixemul`; libraries `allegro5`, `SDL2` and `m`, in
+  that order (plus whatever else your SDL2 build links with); library
+  paths `allegro5_wrapper/lib` and SDL2's.
+
+The Allegro wrapper itself needs SDL2's header directory on its include
+path, since it includes `<SDL.h>`.
