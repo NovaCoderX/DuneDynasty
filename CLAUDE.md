@@ -13,7 +13,7 @@ Dune Dynasty is a continuation of the classic real-time strategy game Dune II by
 * `allegro5_wrapper/` builds `liballegro5.a`: the Allegro 5.2.11.3 API that Dune Dynasty uses, currently stubs, to be implemented on SDL2.
 * `amiga_build/` is the Eclipse CDT managed build of the game (`make` from that directory).
 * `src/os/amiga_main.c` owns `main()` (stack check, `g_amiga_path`); the game's entry point is `dune_main()` on Amiga. Data paths are joined as `"%s/name"` on `g_amiga_path`, so never build them with a trailing or doubled `/` (AmigaDOS reads `//` as the parent directory).
-* Logging: `Error()`/`Warning()` in `src/os/error.c` also write to `dunedynasty.log` in `g_amiga_path` on Amiga; route anything that should reach the log through them.
+* Logging: all output goes through `Log_Error()`/`Log_Warning()`/`Log_Info()`/`Log_Debug()` (`src/os/error.h`), which also write to `dunedynasty.log` in `g_amiga_path` on Amiga; never print with `printf`/`fprintf` directly. Don't name game functions `Info()` or `Debug()`: AmigaOS has both (dos.library, exec.library).
 * MIDI music: `src/audio/midi_camd.c` implements `src/audio/midi.h` on camd.library (headers from `make camd` in the toolchain build tree).
 * `DuneLegacy/` and `OpenDUNE/` are the author's earlier 68k ports, kept for reference only; they are not part of the build.
 * Never put `src/` on the include path: `src/string.h` shadows the C library's `<string.h>`.

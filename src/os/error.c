@@ -8,20 +8,31 @@
 
 #include "error.h"
 
+enum LogLevel {
+	LOGLEVEL_ERROR,
+	LOGLEVEL_WARNING,
+	LOGLEVEL_INFO,
+	LOGLEVEL_DEBUG
+};
+
 #if defined(__AMIGA__)
 #include <time.h>
 #include "../file.h"
 
-/* On the Amiga, errors and warnings are also written to dunedynasty.log in
- * the game directory, where they survive the game exiting or crashing.  The
- * log is created by a run's first message, so a run without any leaves the
+/* On the Amiga, every message is also written to dunedynasty.log in the
+ * game directory, where it survives the game exiting or crashing.  The log
+ * is created by a run's first message, so a run without any leaves the
  * previous log in place; the date at the top tells them apart.
  */
 static FILE *s_log = NULL;
 static bool s_logFailed = false;
 
-static void Log_Write(const char *format, va_list ap)
+static void LogFile_Write(enum LogLevel level, const char *format, va_list ap)
 {
+	static const char * const levelNames[] = { "ERROR:", "WARNING:", "INFO:", "DEBUG:" };
+	char message[1024];
+	size_t length;
+
 	if (s_log == NULL) {
 		char path[1024];
 		char date[32];
@@ -41,41 +52,63 @@ static void Log_Write(const char *format, va_list ap)
 		fprintf(s_log, "Dune Dynasty log, %s\n", date);
 	}
 
-	vfprintf(s_log, format, ap);
-
-	/* Not every message ends its line. */
-	if (format[0] != '\0' && format[strlen(format) - 1] != '\n')
-		fputc('\n', s_log);
+	/* Not every message ends its line; the log puts each on its own. */
+	vsnprintf(message, sizeof(message), format, ap);
+	length = strlen(message);
+	fprintf(s_log, "%-9s%s%s", levelNames[level], message,
+		(length > 0 && message[length - 1] == '\n') ? "" : "\n");
 
 	/* So the log is complete up to a crash. */
 	fflush(s_log);
 }
 #endif
 
-void Error(const char *format, ...) {
-	va_list ap;
+static void Message(enum LogLevel level, FILE *console, const char *format, va_list ap)
+{
+#if defined(__AMIGA__)
+	va_list log_ap;
 
-	va_start(ap, format);
-	vfprintf(stderr, format, ap);
-	va_end(ap);
+	va_copy(log_ap, ap);
+#else
+	VARIABLE_NOT_USED(level);
+#endif
+
+	vfprintf(console, format, ap);
 
 #if defined(__AMIGA__)
-	va_start(ap, format);
-	Log_Write(format, ap);
-	va_end(ap);
+	LogFile_Write(level, format, log_ap);
+	va_end(log_ap);
 #endif
 }
 
-void Warning(const char *format, ...) {
+void Log_Error(const char *format, ...) {
 	va_list ap;
 
 	va_start(ap, format);
-	vfprintf(stderr, format, ap);
+	Message(LOGLEVEL_ERROR, stderr, format, ap);
 	va_end(ap);
+}
 
-#if defined(__AMIGA__)
+void Log_Warning(const char *format, ...) {
+	va_list ap;
+
 	va_start(ap, format);
-	Log_Write(format, ap);
+	Message(LOGLEVEL_WARNING, stderr, format, ap);
 	va_end(ap);
-#endif
+}
+
+void Log_Info(const char *format, ...) {
+	va_list ap;
+
+	va_start(ap, format);
+	Message(LOGLEVEL_INFO, stdout, format, ap);
+	va_end(ap);
+}
+
+void Log_Debug(const char *format, ...) {
+	va_list ap;
+
+	va_start(ap, format);
+	Message(LOGLEVEL_DEBUG, stderr, format, ap);
+	va_end(ap);
 }

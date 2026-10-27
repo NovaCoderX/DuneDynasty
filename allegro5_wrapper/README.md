@@ -1,7 +1,7 @@
 # Allegro 5 wrapper for Amiga 68k
 
 A static library, `liballegro5.a`, that provides the part of the Allegro 5
-API the Amiga build of Dune Dynasty 1.5.7 links against: 149 functions, plus
+API the Amiga build of Dune Dynasty 1.5.7 links against: 150 functions, plus
 `al_uninstall_system`. They are being implemented on SDL2 (SDL2-NovaMesa) for
 AmigaOS 3.x with RTG one module at a time; the rest are still stubs, so the
 game always compiles and links.
@@ -130,8 +130,11 @@ stubbed `al_create_display()` returns NULL, the game prints "Could not
 create display!" and exits with status 1. Nothing on that path
 dereferences a stub's NULL.
 
-`ALLEGRO_STUB_TRACE` (on by default in the makefile) prints the first call
-to each stub on stderr:
+`ALLEGRO_STUB_TRACE` (on by default in the makefile) reports the first
+call to each stub through Allegro's trace output (`debug.c`): to the
+handler the program registered with `al_register_trace_handler()`, or to
+stderr if there is none. Dune Dynasty registers one that sends the trace
+to its log:
 
 ```
 allegro5 stub: al_load_config_file()
@@ -177,6 +180,7 @@ caller's state:
 | `image.c` | allegro_image.h | 1 | stubs |
 | `memfile.c` | allegro_memfile.h | 1 | stubs |
 | `audio.c` | allegro_audio.h | 29 | 1 plain C, 28 stubs |
+| `debug.c` | debug.h | 1 | plain C |
 
 `al_is_sub_bitmap` is only called inside `assert()`, so a release build
 (`-DNDEBUG`) does not need it; it is stubbed anyway so debug builds link.

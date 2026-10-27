@@ -5,22 +5,24 @@
  * 0), so a caller that checks for errors stops cleanly instead of
  * dereferencing a fake object.
  *
- * Build with -DALLEGRO_STUB_TRACE to print the first call to each stub
- * on stderr; the output shows how far a program gets and which functions
- * to implement next.
+ * Build with -DALLEGRO_STUB_TRACE to report the first call to each stub
+ * through Allegro's trace output: the handler the program registered with
+ * al_register_trace_handler(), or stderr.  The trace shows how far a
+ * program gets and which functions to implement next.
  */
 #ifndef A5_STUB_H
 #define A5_STUB_H
 
-#ifdef ALLEGRO_STUB_TRACE
-#include <stdio.h>
+/* debug.c */
+void a5_trace(const char *format, ...) __attribute__((format(printf, 1, 2)));
 
+#ifdef ALLEGRO_STUB_TRACE
 #define A5_STUB()                                                    \
    do {                                                              \
       static int reported;                                           \
       if (!reported) {                                               \
          reported = 1;                                               \
-         fprintf(stderr, "allegro5 stub: %s()\n", __func__);          \
+         a5_trace("allegro5 stub: %s()\n", __func__);                \
       }                                                              \
    } while (0)
 #else

@@ -369,7 +369,7 @@ VideoA5_Init(void)
 	al_set_new_display_option(ALLEGRO_STENCIL_SIZE, 8, ALLEGRO_SUGGEST);
 	display = al_create_display(TRUE_DISPLAY_WIDTH, TRUE_DISPLAY_HEIGHT);
 	if (display == NULL) {
-		Error("Could not create display!");
+		Log_Error("Could not create display!");
 		return false;
 	}
 
@@ -616,7 +616,7 @@ VideoA5_Tick(void)
 		snprintf(filepath, sizeof(filepath), "%s/%s", g_personal_data_dir, filename);
 
 		al_save_bitmap(filepath, al_get_backbuffer(display));
-		fprintf(stdout, "screenshot: %s\n", filepath);
+		Log_Info("screenshot: %s\n", filepath);
 	}
 
 	if (show_fps) {

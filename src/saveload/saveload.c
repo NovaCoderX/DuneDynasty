@@ -120,7 +120,7 @@ bool SaveLoad_Load(const SaveLoadDesc *sld, FILE *fp, void *object)
 
 				case SLDT_INVALID:
 				default:
-					Error("Error in Save/Load structure descriptions");
+					Log_Error("Error in Save/Load structure descriptions");
 					return false;
 			}
 
@@ -205,7 +205,7 @@ bool SaveLoad_Load(const SaveLoadDesc *sld, FILE *fp, void *object)
 					break;
 
 				case SLDT_INVALID:
-					Error("Error in Save/Load structure descriptions");
+					Log_Error("Error in Save/Load structure descriptions");
 					return false;
 			}
 		}
@@ -289,7 +289,7 @@ bool SaveLoad_Save(const SaveLoadDesc *sld, FILE *fp, void *object)
 					break;
 
 				case SLDT_INVALID:
-					Error("Error in Save/Load structure descriptions");
+					Log_Error("Error in Save/Load structure descriptions");
 					return false;
 			}
 
@@ -346,7 +346,7 @@ bool SaveLoad_Save(const SaveLoadDesc *sld, FILE *fp, void *object)
 
 				default:
 				case SLDT_INVALID:
-					Error("Error in Save/Load structure descriptions");
+					Log_Error("Error in Save/Load structure descriptions");
 					return false;
 			}
 		}

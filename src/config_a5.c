@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include "buildcfg.h"
+#include "os/error.h"
 #include "os/math.h"
 #include "os/strings.h"
 
@@ -571,7 +572,7 @@ ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
 	}
 
 	if (!al_make_directory(g_personal_data_dir)) {
-		fprintf(stderr, "Could not create %s!\n", filename);
+		Log_Error("Could not create %s!\n", filename);
 	}
 
 	al_destroy_path(dune_data_path);
@@ -579,8 +580,8 @@ ConfigA5_InitDataDirectoriesAndLoadConfigFile(void)
 	al_destroy_path(user_settings_path);
 #endif
 
-	fprintf(stdout, "Dune data directory: %s\n", g_dune_data_dir);
-	fprintf(stdout, "Personal data directory: %s\n", g_personal_data_dir);
+	Log_Info("Dune data directory: %s\n", g_dune_data_dir);
+	Log_Info("Personal data directory: %s\n", g_personal_data_dir);
 }
 
 void

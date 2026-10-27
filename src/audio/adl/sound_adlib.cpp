@@ -37,6 +37,7 @@
  */
 
 #include "sound_adlib.h"
+#include "../../os/error.h"
 
 #include <algorithm>
 #include <stdarg.h>
@@ -90,10 +91,12 @@ static inline uint16 READ_BE_UINT16(const void *ptr) {
 
 static inline void warning(const char *str, ...)
 {
+	char buffer[256];
 	va_list args;
 	va_start(args, str);
-	vfprintf(stderr,str,args);
-	fprintf(stderr,"\n");
+	vsnprintf(buffer, sizeof(buffer), str, args);
+	va_end(args);
+	Log_Warning("%s\n", buffer);
 }
 
 static inline void debugC(int level, int debugChannels, const char *str, ...)
@@ -2622,7 +2625,7 @@ void SoundAdLibPC::internalLoadFile(ALLEGRO_FILE* rwop) {
 
 #ifdef __USE_SDL__
   if((file_size = SDL_RWseek(rwop,0,SEEK_END)) <= 0) {
-	fprintf(stderr,"SoundAdLibPC::internalLoadFile(): Cannot seek in SDL_RWop!\n");
+	Log_Error("SoundAdLibPC::internalLoadFile(): Cannot seek in SDL_RWop!\n");
 	return;
   }
 #else
@@ -2637,7 +2640,7 @@ void SoundAdLibPC::internalLoadFile(ALLEGRO_FILE* rwop) {
 
 #ifdef __USE_SDL__
   if(SDL_RWseek(rwop,0,SEEK_SET) != 0) {
-	fprintf(stderr,"SoundAdLibPC::internalLoadFile(): Cannot seek in SDL_RWop!\n");
+	Log_Error("SoundAdLibPC::internalLoadFile(): Cannot seek in SDL_RWop!\n");
 	return;
   }
 #endif
@@ -2645,12 +2648,12 @@ void SoundAdLibPC::internalLoadFile(ALLEGRO_FILE* rwop) {
   file_data = new uint8[file_size];
 #ifdef __USE_SDL__
   if(SDL_RWread(rwop,file_data,1,file_size) != file_size) {
-	fprintf(stderr,"SoundAdLibPC::internalLoadFile(): Cannot read from SDL_RWop!\n");
+	Log_Error("SoundAdLibPC::internalLoadFile(): Cannot read from SDL_RWop!\n");
 	return;
   }
 #else
   if(al_fread(rwop,file_data,file_size) != file_size) {
-	fprintf(stderr,"SoundAdLibPC::internalLoadFile(): Cannot read from SDL_RWop!\n");
+	Log_Error("SoundAdLibPC::internalLoadFile(): Cannot read from SDL_RWop!\n");
 	return;
   }
 #endif
@@ -2694,7 +2697,7 @@ Mix_Chunk* SoundAdLibPC::getSubsong(int Num) {
 		SoundAdLibPC::callback(this, buf + bufSize - 1024, 1024);
 
 		if(bufSize > 1024*1024*16) {
-			fprintf(stderr,"SoundAdLibPC::getSubsong(): Decoding aborted after 16MB have been decoded.\n");
+			Log_Warning("SoundAdLibPC::getSubsong(): Decoding aborted after 16MB have been decoded.\n");
 			break;
 		}
 

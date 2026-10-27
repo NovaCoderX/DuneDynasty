@@ -54,7 +54,7 @@ static bool Load_Main(FILE *fp)
 	/* All OpenDUNE / Dune2 savegames should start with 'FORM' */
 	if (fread(&header, sizeof(uint32), 1, fp) != 1) return false;
 	if (BETOH32(header) != CC_FORM) {
-		Error("Invalid magic header in savegame. Not an OpenDUNE / Dune2 savegame.");
+		Log_Error("Invalid magic header in savegame. Not an OpenDUNE / Dune2 savegame.");
 		return false;
 	}
 
@@ -133,7 +133,7 @@ static bool Load_Main(FILE *fp)
 						return false;
 				}
 				else {
-					Error("Structure_Load2 called before Structure_Load. Skipped.\n");
+					Log_Error("Structure_Load2 called before Structure_Load. Skipped.\n");
 				}
 				break;
 
@@ -143,7 +143,7 @@ static bool Load_Main(FILE *fp)
 						return false;
 				}
 				else {
-					Error("Info_Load2 called before Unit_Load. Skipped.\n");
+					Log_Error("Info_Load2 called before Unit_Load. Skipped.\n");
 				}
 				break;
 
@@ -153,7 +153,7 @@ static bool Load_Main(FILE *fp)
 						return false;
 				}
 				else {
-					Error("Map_Load2 called before Map_Load. Skipped.\n");
+					Log_Error("Map_Load2 called before Map_Load. Skipped.\n");
 				}
 				break;
 
@@ -170,12 +170,12 @@ static bool Load_Main(FILE *fp)
 						return false;
 				}
 				else {
-					Error("Unit_Load2 called before Unit_Load. Skipped.\n");
+					Log_Error("Unit_Load2 called before Unit_Load. Skipped.\n");
 				}
 				break;
 
 			default:
-				Error("Unknown chunk in savegame: %c%c%c%c (length: %d). Skipped.\n", header, header >> 8, header >> 16, header >> 24, length);
+				Log_Error("Unknown chunk in savegame: %c%c%c%c (length: %d). Skipped.\n", header, header >> 8, header >> 16, header >> 24, length);
 				break;
 		}
 
@@ -209,7 +209,7 @@ LoadFile(const char *filename)
 
 	fp = File_Open_CaseInsensitive(SEARCHDIR_PERSONAL_DATA_DIR, filename, "rb");
 	if (fp == NULL) {
-		Error("Failed to open file '%s' for reading.\n", filename);
+		Log_Error("Failed to open file '%s' for reading.\n", filename);
 
 		/* TODO -- Load failures should not result in termination */
 		exit(0);
@@ -226,7 +226,7 @@ LoadFile(const char *filename)
 	fclose(fp);
 
 	if (!res) {
-		Error("Error while loading savegame.\n");
+		Log_Error("Error while loading savegame.\n");
 
 		/* TODO -- Load failures should not result in termination */
 		exit(0);

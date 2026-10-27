@@ -30,12 +30,25 @@ Workbench), then calls the game's own entry point, renamed `dune_main()`
 on Amiga. The game data, `dunedynasty.cfg` and saves are all read from and
 written to that directory.
 
-`Error()` and `Warning()` (`src/os/error.c`) print to stderr as upstream,
-and on Amiga also write to `dunedynasty.log` in the game directory. The log
-is created by a run's first error or warning, starts with the date, and is
-flushed after every message. Messages the game prints with `fprintf()`
-directly, and the Allegro wrapper's stub trace, only go to the console:
-the Shell window, or the window libnix opens for a Workbench start.
+All of the game's output goes through `Log_Error()`, `Log_Warning()`,
+`Log_Info()` and `Log_Debug()` (`src/os/error.c`). They print to the
+console as before (info on stdout, the rest on stderr) and on Amiga also
+write to `dunedynasty.log` in the game directory, one line per message
+with its level:
+
+```
+Dune Dynasty log, 2026-10-27 10:47:05
+INFO:    Dune data directory: Work:Games/DuneDynasty
+DEBUG:   allegro5 stub: al_load_config_file()
+ERROR:   Could not create display!
+```
+
+The log is created by a run's first message and flushed after every one,
+so it is complete up to a crash. Allegro's trace, which includes the Amiga
+wrapper's stub trace, reaches `Log_Debug()` through
+`al_register_trace_handler()` in `A5_InitOptions()`. The functions are not
+called `Info()` and `Debug()` because AmigaOS already has functions of
+those names, in dos.library and exec.library.
 
 `include/buildcfg.h` replaces the CMake-generated header: AUD music on;
 FluidSynth, MP3 (libmad) and FLAC/Ogg off.

@@ -10,6 +10,7 @@
 #include <string.h>
 #include "types.h"
 #include "os/common.h"
+#include "os/error.h"
 #include "os/math.h"
 #include "os/strings.h"
 
@@ -564,7 +565,7 @@ Campaign_ReadHouseIni(void)
 
 					const int count = sscanf(buffer, "%hu,%hu,%hu", &owner, &unit75, &unit25);
 					if (count != 3) {
-						fprintf(stderr, "[%s] %s=%d,%d,%d\n", category, key,
+						Log_Warning("[%s] %s=%d,%d,%d\n", category, key,
 								hi->superWeapon.fremen.owner, hi->superWeapon.fremen.unit75, hi->superWeapon.fremen.unit25);
 						continue;
 					}
@@ -578,7 +579,7 @@ Campaign_ReadHouseIni(void)
 
 					const int count = sscanf(buffer, "%hu,%hu", &owner, &unit);
 					if (count != 2) {
-						fprintf(stderr, "[%s] %s=%d,%d\n", category, key,
+						Log_Warning("[%s] %s=%d,%d\n", category, key,
 								hi->superWeapon.saboteur.owner, hi->superWeapon.saboteur.unit);
 						continue;
 					}
@@ -640,7 +641,7 @@ Campaign_ReadHouseIni(void)
 			else if ((si != NULL) && oi->flags.factory) {
 				const StructureInfo *original = &g_table_structureInfo_original[type];
 
-				fprintf(stderr, "[%s] %s=%d,%d,%d,%d,%d\n", category, key,
+				Log_Warning("[%s] %s=%d,%d,%d,%d,%d\n", category, key,
 						original->o.availableCampaign[houseID] - original->o.availableCampaign[ref],
 						original->o.upgradeLevelRequired[houseID] - original->o.upgradeLevelRequired[HOUSE_MERCENARY],
 						original->upgradeCampaign[0][houseID] - original->upgradeCampaign[0][HOUSE_MERCENARY],
@@ -650,7 +651,7 @@ Campaign_ReadHouseIni(void)
 			else {
 				const ObjectInfo *original = (si == NULL) ? &g_table_unitInfo_original[type].o : &g_table_structureInfo_original[type].o;
 
-				fprintf(stderr, "[%s] %s=%d,%d\n", category, key,
+				Log_Warning("[%s] %s=%d,%d\n", category, key,
 						original->availableCampaign[houseID] - original->availableCampaign[ref],
 						original->upgradeLevelRequired[houseID] - original->upgradeLevelRequired[HOUSE_MERCENARY]);
 			}
@@ -738,7 +739,7 @@ Campaign_ReadProfileIni(void)
 								&ot.buildCredits, &ot.buildTime, &ot.hitpoints, &ot.fogUncoverRadius,
 								&availableCampaign, &ot.priorityBuild, &ot.priorityTarget, &sortPriority);
 						if (count < 7) {
-							fprintf(stderr, "[%s] %s=%u,%u,%u,%u,%u,%u,%u,%u\n", category, key,
+							Log_Warning("[%s] %s=%u,%u,%u,%u,%u,%u,%u,%u\n", category, key,
 									oi->buildCredits, oi->buildTime, oi->hitpoints, oi->fogUncoverRadius,
 									oi->availableCampaign[ref], oi->priorityBuild, oi->priorityTarget, oi->sortPriority);
 							break;
@@ -776,7 +777,7 @@ Campaign_ReadProfileIni(void)
 						const int count = sscanf(buffer, "%hu,%hu,%hu,%hu",
 								&ut.fireDistance, &ut.damage, &ut.fireDelay, &ut.movingSpeedFactor);
 						if (count < 4) {
-							fprintf(stderr, "[%s] %s=%u,%u,%u,%u\n", category, key,
+							Log_Warning("[%s] %s=%u,%u,%u,%u\n", category, key,
 									ui->fireDistance, ui->damage, ui->fireDelay, ui->movingSpeedFactor);
 							break;
 						}
@@ -797,7 +798,7 @@ Campaign_ReadProfileIni(void)
 						const int count = sscanf(buffer, "%hX,%X,%hu",
 								&availableHouse, &structuresRequired, &upgradeLevelRequired);
 						if (count < 3) {
-							fprintf(stderr, "[%s] %s=0x%02X,0x%06X,%u\n", category, key,
+							Log_Warning("[%s] %s=0x%02X,0x%06X,%u\n", category, key,
 									oi->availableHouse, oi->structuresRequired, oi->upgradeLevelRequired[HOUSE_MERCENARY]);
 							break;
 						}
@@ -825,7 +826,7 @@ Campaign_ReadProfileIni(void)
 								&buildableUnits[4], &buildableUnits[5], &buildableUnits[6], &buildableUnits[7],
 								&upgradeCampaign[0], &upgradeCampaign[1], &upgradeCampaign[2]);
 						if (count < 11) {
-							fprintf(stderr, "[%s] %s=%d,%d,%d,%d,%d,%d,%d,%d,%u,%u,%u\n", category, key,
+							Log_Warning("[%s] %s=%d,%d,%d,%d,%d,%d,%d,%d,%u,%u,%u\n", category, key,
 									si->buildableUnits[0], si->buildableUnits[1], si->buildableUnits[2], si->buildableUnits[3],
 									si->buildableUnits[4], si->buildableUnits[5], si->buildableUnits[6], si->buildableUnits[7],
 									si->upgradeCampaign[0][HOUSE_MERCENARY], si->upgradeCampaign[1][HOUSE_MERCENARY], si->upgradeCampaign[2][HOUSE_MERCENARY]);
@@ -857,7 +858,7 @@ Campaign_ReadProfileIni(void)
 						const int count = sscanf(buffer, "%hX,%hu,%X,%hu,%hd",
 								&flags, &st.o.spawnChance, &st.enterFilter, &st.creditsStorage, &st.powerUsage);
 						if (count < 5) {
-							fprintf(stderr, "[%s] %s=0x%04X,%u,0x%06X,%u,%d\n", category, key,
+							Log_Warning("[%s] %s=0x%04X,%u,0x%06X,%u,%d\n", category, key,
 									ObjectInfo_FlagsToUint16(oi), si->o.spawnChance,
 									si->enterFilter, si->creditsStorage, si->powerUsage);
 							break;
@@ -893,7 +894,7 @@ Campaign_ReadProfileIni(void)
 								&flags, &ot.spawnChance,
 								&ot.actionsPlayer[0], &ot.actionsPlayer[1], &ot.actionsPlayer[2], &ot.actionsPlayer[3]);
 						if (count < 6) {
-							fprintf(stderr, "[%s] %s=0x%04X,%u,%u,%u,%u,%u\n", category, key,
+							Log_Warning("[%s] %s=0x%04X,%u,%u,%u,%u,%u\n", category, key,
 									ObjectInfo_FlagsToUint16(oi), oi->spawnChance,
 									oi->actionsPlayer[0], oi->actionsPlayer[1], oi->actionsPlayer[2], oi->actionsPlayer[3]);
 							break;
@@ -932,7 +933,7 @@ Campaign_ReadProfileIni(void)
 						const int count = sscanf(buffer, "%hX,%hu,%hu,%hd,%hd,%hd",
 								&flags, &movementType, &turningSpeed, &explosionType, &bulletType, &bulletSound);
 						if (count < 6) {
-							fprintf(stderr, "[%s] %s=0x%04X,%u,%u,%d,%d,%d\n", category, key,
+							Log_Warning("[%s] %s=0x%04X,%u,%u,%d,%d,%d\n", category, key,
 									UnitInfo_FlagsToUint16(ui), ui->movementType, ui->turningSpeed,
 									ui->explosionType, ui->bulletType, ui->bulletSound);
 							break;
@@ -970,7 +971,7 @@ Campaign_ReadProfileIni(void)
 						const int count = sscanf(buffer, "%hu,%hu,%hd,%hu",
 								&spriteID, &baseUnit, &baseTurret, &animationSpeed);
 						if ((count < 4) || (baseUnit >= UNIT_MAX)) {
-							fprintf(stderr, "[%s] %s=%u,%u,%d,%u\n", category, key,
+							Log_Warning("[%s] %s=%u,%u,%d,%u\n", category, key,
 									ui->o.spriteID, type, ((int16)ui->turretSpriteID == -1) ? -1 : type, ui->animationSpeed);
 							break;
 						}
