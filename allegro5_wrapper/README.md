@@ -90,21 +90,54 @@ Behaviour matches Allegro 5.2 where Dune Dynasty depends on it:
   source's events that are still queued.
 - `al_wait_for_event(queue, NULL)` waits without removing the event.
 
+### Keyboard (`keyboard.c`) and mouse (`mouse.c`)
+
+SDL's input has to be pumped by the task that owns the window, so, as in
+Allegro's own SDL backend, checking, reading, flushing or waiting on a
+queue pumps SDL's events first, but only on the thread that called
+`al_install_system()`; the music thread's queue never touches SDL. A wait
+on the main thread wakes at least every 10 ms to pump again, which is how
+input reaches a queue with no timer running. `SDL_PumpEvents()` runs once
+per call, followed by `SDL_PeepEvents()`, since `SDL_PollEvent()` would
+pump again for every event.
+
+- Keys map from SDL scancodes as in Allegro's SDL backend: left Alt is
+  `ALLEGRO_KEY_ALT`, right Alt `ALLEGRO_KEY_ALTGR`, the Amiga keys
+  `ALLEGRO_KEY_LWIN`/`RWIN`; keys Allegro has no code for (such as Help)
+  come through as keycode 0.
+- `KEY_DOWN` on the first press, `KEY_UP` on release, and `KEY_CHAR` on
+  every press and auto-repeat (with `repeat` set), which is where Dune
+  Dynasty reads Enter, Alt+Enter and F10 to F12 from. `unichar` is the
+  character the key types unshifted; `SDL_TEXTINPUT` is not used, since
+  the game never reads `unichar`.
+- Mouse buttons are 1 left, 2 right, 3 middle. Motion and the wheel are
+  `ALLEGRO_EVENT_MOUSE_AXES` with `x`/`y`, `dx`/`dy`, and `z`/`dz` for the
+  wheel.
+- `display` in keyboard and mouse events is NULL until the display module
+  exists.
+
+`al_set_mouse_xy()` and the cursor functions need the display and bitmaps,
+so they are still stubs. Input only arrives once there is a window: SDL2's
+video driver reads it from the window's IDCMP port.
+
 ## How the stubs behave
 
 Each stub does nothing and returns a failure value: `false`, `NULL`, `0` or
-`-1`, or an empty string for path queries. With system, timers and event
-queues working, and the game data in place, Dune Dynasty now gets as far
-as `A5_Init()`: it loads its fonts, creates its input queue, then exits
-with status 1 when the stubbed `al_install_keyboard()` fails. Nothing on
-that path dereferences a stub's NULL.
+`-1`, or an empty string for path queries. With system, timers, event
+queues, keyboard and mouse working, and the game data in place, Dune
+Dynasty now gets as far as creating its display in `VideoA5_Init()`: the
+stubbed `al_create_display()` returns NULL, the game prints "Could not
+create display!" and exits with status 1. Nothing on that path
+dereferences a stub's NULL.
 
 `ALLEGRO_STUB_TRACE` (on by default in the makefile) prints the first call
 to each stub on stderr:
 
 ```
 allegro5 stub: al_load_config_file()
-allegro5 stub: al_install_keyboard()
+allegro5 stub: al_set_new_display_flags()
+allegro5 stub: al_set_new_display_option()
+allegro5 stub: al_create_display()
 ```
 
 As modules get implemented, this trace shows which call is next on the path.
@@ -133,8 +166,8 @@ caller's state:
 | `bitmap_draw.c` | bitmap_draw.h | 8 | stubs |
 | `color.c` | color.h | 2 | plain C |
 | `transformations.c` | transformations.h | 3 | 2 plain C, 1 stub |
-| `keyboard.c` | keyboard.h | 2 | stubs |
-| `mouse.c` | mouse.h, mouse_cursor.h | 8 | stubs |
+| `keyboard.c` | keyboard.h | 2 | SDL2 |
+| `mouse.c` | mouse.h, mouse_cursor.h | 8 | 2 SDL2, 6 stubs (warp, cursors) |
 | `threads.c` | threads.h | 5 | stubs |
 | `path.c` | path.h | 9 | stubs |
 | `config.c` | config.h | 7 | stubs |
@@ -177,12 +210,17 @@ as follows:
 
 ## Next steps
 
+The display is what the game needs next, and what makes keyboard and
+mouse input arrive. When it exists, `a5_pump_sdl_events()` needs cases for
+SDL's window events (close becomes `ALLEGRO_EVENT_DISPLAY_CLOSE`), and the
+input events' `display` field should point at it.
+
 `threads.c` is small and is what Dune Dynasty's MIDI music runs on.
 Several Allegro modules are plain C and could be compiled from the
 5.2.11.3 sources instead of rewritten: `path.c`, `config.c`, `utf8.c`
 with `misc/bstrlib.c`, `file.c`, `file_stdio.c`, `fshook_stdio.c`,
 `transformations.c` and the memfile addon. They need the `internal/`
 headers, which are already in the Allegro5 repository. The display,
-bitmap, input and audio modules are the ones that need SDL2.
+bitmap and audio modules are the ones that need SDL2.
 
 Allegro 5 is distributed under the zlib licence; see `LICENSE.txt`.

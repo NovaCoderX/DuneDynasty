@@ -3,7 +3,8 @@
  * A queue is a ring buffer of events plus the sources registered with it.
  * Timer ticks are generated when a queue they feed is checked or waited
  * on (see timer.c), so waiting means sleeping until the next tick or until
- * another thread emits an event.
+ * another thread emits an event.  On the main thread, checking or waiting
+ * on a queue also pumps SDL's input (see a5_pump_sdl_events()).
  */
 
 #include <math.h>
@@ -18,6 +19,9 @@ _Static_assert(sizeof(A5_EVENT_SOURCE) <= sizeof(ALLEGRO_EVENT_SOURCE),
    "A5_EVENT_SOURCE must fit in an ALLEGRO_EVENT_SOURCE");
 
 #define INITIAL_CAPACITY  64   /* always a power of two */
+
+/* The longest the main thread waits before pumping SDL's input again. */
+#define PUMP_INTERVAL_MS  10
 
 struct ALLEGRO_EVENT_QUEUE {
    ALLEGRO_EVENT *events;
@@ -314,6 +318,7 @@ bool al_is_event_queue_empty(ALLEGRO_EVENT_QUEUE *queue)
 {
    bool empty;
 
+   a5_pump_sdl_events();
    a5_lock();
    queue_update_timers(queue, al_get_time());
    empty = (queue->count == 0);
@@ -326,6 +331,7 @@ bool al_get_next_event(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_EVENT *ret_event)
 {
    bool found;
 
+   a5_pump_sdl_events();
    a5_lock();
    queue_update_timers(queue, al_get_time());
 
@@ -339,6 +345,7 @@ bool al_get_next_event(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_EVENT *ret_event)
 
 void al_flush_event_queue(ALLEGRO_EVENT_QUEUE *queue)
 {
+   a5_pump_sdl_events();
    a5_lock();
    queue_update_timers(queue, al_get_time());
    queue->head = 0;
@@ -346,13 +353,21 @@ void al_flush_event_queue(ALLEGRO_EVENT_QUEUE *queue)
    a5_unlock();
 }
 
-/* As in Allegro, a NULL ret_event waits for an event without removing it. */
+/* As in Allegro, a NULL ret_event waits for an event without removing it.
+ * Nothing else pumps SDL's input, so the main thread wakes at least every
+ * PUMP_INTERVAL_MS to do it; other threads sleep until the next timer tick
+ * or until an event is emitted.
+ */
 void al_wait_for_event(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_EVENT *ret_event)
 {
+   const bool pump = a5_is_main_thread();
+
+   a5_pump_sdl_events();
    a5_lock();
 
    for (;;) {
       const double now = al_get_time();
+      Uint32 ms = SDL_MUTEX_MAXWAIT;
       double when;
 
       queue_update_timers(queue, now);
@@ -361,12 +376,23 @@ void al_wait_for_event(ALLEGRO_EVENT_QUEUE *queue, ALLEGRO_EVENT *ret_event)
 
       if (queue_next_tick(queue, &when)) {
          /* Round up, so we wake just after the tick rather than before. */
-         const Uint32 ms = (Uint32)ceil((when - now) * 1000.0);
-
-         SDL_CondWaitTimeout(queue->cond, s_mutex, ms > 0 ? ms : 1);
+         ms = (Uint32)ceil((when - now) * 1000.0);
+         if (ms == 0)
+            ms = 1;
       }
-      else {
+
+      if (pump && ms > PUMP_INTERVAL_MS)
+         ms = PUMP_INTERVAL_MS;
+
+      if (ms == SDL_MUTEX_MAXWAIT)
          SDL_CondWait(queue->cond, s_mutex);
+      else
+         SDL_CondWaitTimeout(queue->cond, s_mutex, ms);
+
+      if (pump) {
+         a5_unlock();
+         a5_pump_sdl_events();
+         a5_lock();
       }
    }
 

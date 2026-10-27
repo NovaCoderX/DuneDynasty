@@ -6,6 +6,7 @@
 #include "a5_internal.h"
 
 static bool s_installed = false;
+static SDL_threadID s_main_thread;
 static Uint64 s_time_start;
 static double s_time_scale;
 
@@ -26,6 +27,7 @@ bool al_install_system(int version, int (*atexit_ptr)(void (*)(void)))
       return false;
    }
 
+   s_main_thread = SDL_ThreadID();
    s_time_start = SDL_GetPerformanceCounter();
    s_time_scale = 1.0 / (double)SDL_GetPerformanceFrequency();
    s_installed = true;
@@ -44,6 +46,42 @@ void al_uninstall_system(void)
    s_installed = false;
    a5_events_shutdown();
    SDL_Quit();
+}
+
+bool a5_is_main_thread(void)
+{
+   return s_installed && SDL_ThreadID() == s_main_thread;
+}
+
+/* Hands SDL's pending events to the modules that turn them into Allegro
+ * events.  Called by the event queue functions, as Allegro's own SDL
+ * backend does.  SDL_PumpEvents() once, then SDL_PeepEvents(), because
+ * SDL_PollEvent() would pump again for every event.
+ */
+void a5_pump_sdl_events(void)
+{
+   SDL_Event event;
+
+   if (!a5_is_main_thread())
+      return;
+
+   SDL_PumpEvents();
+
+   while (SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) > 0) {
+      switch (event.type) {
+         case SDL_KEYDOWN:
+         case SDL_KEYUP:
+            a5_keyboard_handle_event(&event);
+            break;
+
+         case SDL_MOUSEMOTION:
+         case SDL_MOUSEBUTTONDOWN:
+         case SDL_MOUSEBUTTONUP:
+         case SDL_MOUSEWHEEL:
+            a5_mouse_handle_event(&event);
+            break;
+      }
+   }
 }
 
 /* Allegro uses the name for standard paths and default window titles; the
