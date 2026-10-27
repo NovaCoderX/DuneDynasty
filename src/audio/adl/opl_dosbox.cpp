@@ -29,6 +29,7 @@
 #ifndef DISABLE_DOSBOX_OPL
 
 #include "opl_dosbox.h"
+#include "../../os/error.h"
 
 #include <assert.h>
 
@@ -101,11 +102,11 @@ bool Chip::write(uint32 reg, uint8 val) {
 #endif
 
 		if (val & 0x80) {
-			fprintf(stderr,"warning: timer reset is not implemented reliable\n");
+			Log_Warning("timer reset is not implemented reliable\n");
 			timer[0].reset(time);
 			timer[1].reset(time);
 		} else {
-			fprintf(stderr,"warning: timer update is not implemented reliable\n");
+			Log_Warning("timer update is not implemented reliable\n");
 			timer[0].update(time);
 			timer[1].update(time);
 
@@ -141,7 +142,7 @@ uint8 Chip::read() {
 	double time = al_get_time();
 #endif
 
-	fprintf(stderr,"warning: timer update is not implemented reliable\n");
+	Log_Warning("timer update is not implemented reliable\n");
 	timer[0].update(time);
 	timer[1].update(time);
 

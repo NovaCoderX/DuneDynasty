@@ -57,20 +57,20 @@ bool midi_init(void)
 
 	CamdBase = OpenLibrary("camd.library", 0L);
 	if (CamdBase == NULL) {
-		Error("Could not open camd.library\n");
+		Log_Error("Could not open camd.library\n");
 		return false;
 	}
 
 	s_midi_node = CreateMidi(MIDI_MsgQueue, 0L, MIDI_SysExSize, 4096L, MIDI_Name, (ULONG)"Dune Dynasty", TAG_END);
 	if (s_midi_node == NULL) {
 		midi_uninit();
-		Error("Could not create CAMD MIDI node\n");
+		Log_Error("Could not create CAMD MIDI node\n");
 		return false;
 	}
 
 	if (!midi_find_output(device, sizeof(device))) {
 		midi_uninit();
-		Error("Could not find a CAMD output device\n");
+		Log_Error("Could not find a CAMD output device\n");
 		return false;
 	}
 
@@ -81,7 +81,7 @@ bool midi_init(void)
 	                          TAG_END);
 	if (s_midi_link == NULL) {
 		midi_uninit();
-		Error("Could not create CAMD MIDI link to %s\n", device);
+		Log_Error("Could not create CAMD MIDI link to %s\n", device);
 		return false;
 	}
 

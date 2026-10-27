@@ -202,7 +202,7 @@ SaveFile(const char *filename, const char *description)
 	if (!res) {
 		/* TODO -- Also remove the savegame now */
 
-		Error("Error while writing savegame.\n");
+		Log_Error("Error while writing savegame.\n");
 		return false;
 	}
 

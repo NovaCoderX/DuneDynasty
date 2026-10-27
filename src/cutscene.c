@@ -711,7 +711,7 @@ static void GameLoop_PlayAnimation(void)
 
 			default:
 				PrepareEnd();
-				Error("Bad mode in animation #%i.\n", animationMode);
+				Log_Error("Bad mode in animation #%i.\n", animationMode);
 				exit(0);
 		}
 

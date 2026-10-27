@@ -434,7 +434,7 @@ File_Open_Ex(enum SearchDirectory dir, const char *filename, uint8 mode)
 	res = _File_Open(dir, filename, mode);
 
 	if (res == FILE_INVALID) {
-		Error("Unable to open file '%s'.\n", filename);
+		Log_Error("Unable to open file '%s'.\n", filename);
 		exit(1);
 	}
 
@@ -473,7 +473,7 @@ uint32 File_Read(uint8 index, void *buffer, uint32 length)
 	if (length > s_file[index].size - s_file[index].position) length = s_file[index].size - s_file[index].position;
 
 	if (fread(buffer, length, 1, s_file[index].fp) != 1) {
-		Error("Read error\n");
+		Log_Error("Read error\n");
 		File_Close(index);
 
 		length = 0;
@@ -523,7 +523,7 @@ uint32 File_Write(uint8 index, void *buffer, uint32 length)
 	if (s_file[index].fp == NULL) return 0;
 
 	if (fwrite(buffer, length, 1, s_file[index].fp) != 1) {
-		Error("Write error\n");
+		Log_Error("Write error\n");
 		File_Close(index);
 
 		length = 0;

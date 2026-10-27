@@ -821,13 +821,13 @@ bool MPU_Init(void)
 
 	s_mpu_sem = Semaphore_Create(0);
 	if (s_mpu_sem == NULL) {
-		Error("Failed to create semaphore\n");
+		Log_Error("Failed to create semaphore\n");
 		return false;
 	}
 
 	s_mpu_thread = Thread_Create(MPU_ThreadProc, NULL);
 	if (s_mpu_thread == NULL) {
-		Error("Failed to create thread\n");
+		Log_Error("Failed to create thread\n");
 		Semaphore_Destroy(s_mpu_sem);
 		return false;
 	}

@@ -29,6 +29,7 @@
 #include <math.h>
 
 #include "opl_mame.h"
+#include "../../os/error.h"
 
 #define ARRAYSIZE(x) ((int)(sizeof(x) / sizeof(x[0])))
 
@@ -45,9 +46,12 @@ template<typename T> inline T CLIP (T v, T amin, T amax) { if (v < amin) return 
 
 static inline void warning(const char *str, ...)
 {
+	char buffer[256];
 	va_list args;
 	va_start(args, str);
-	vfprintf(stderr,str,args);
+	vsnprintf(buffer, sizeof(buffer), str, args);
+	va_end(args);
+	Log_Warning("%s", buffer);
 }
 
 

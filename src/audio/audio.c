@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include "buildcfg.h"
 #include "../os/common.h"
+#include "../os/error.h"
 #include "../os/math.h"
 
 #include "audio.h"
@@ -104,7 +105,7 @@ Audio_ScanMusic(void)
 #endif
 
 			m->enable &=~MUSIC_FOUND;
-			if (verbose) fprintf(stdout, "[missing] %s\n", m->filename);
+			if (verbose) Log_Info("[missing] %s\n", m->filename);
 			continue;
 
 found_song:
@@ -123,7 +124,7 @@ count_song:
 					l->count_default++;
 			}
 
-			if (verbose) fprintf(stdout, "[found]   %s\n", m->filename);
+			if (verbose) Log_Info("[found]   %s\n", m->filename);
 		}
 	}
 }

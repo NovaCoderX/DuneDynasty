@@ -10,6 +10,7 @@
 #include "config.h"
 #include "input/input_a5.h"
 #include "input/mouse.h"
+#include "os/error.h"
 #include "timer/timer_a5.h"
 #include "video/video_a5.h"
 
@@ -129,11 +130,20 @@ A5_InitTransform(bool screen_size_changed)
 	A5_UseTransform(curr_transform);
 }
 
+static void
+A5_TraceHandler(const char *message)
+{
+	Log_Debug("%s", message);
+}
+
 bool
 A5_InitOptions(void)
 {
 	if (al_init() != true)
 		return false;
+
+	/* Allegro's trace, which includes the Amiga wrapper's stub trace. */
+	al_register_trace_handler(A5_TraceHandler);
 
 #ifdef ALLEGRO_WINDOWS
 	al_set_app_name("Dune Dynasty");

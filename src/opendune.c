@@ -972,7 +972,7 @@ static bool Unknown_25C4_000E(void)
 	GFX_ClearScreen();
 
 	if (!Font_Init()) {
-		Error(
+		Log_Error(
 			"--------------------------\n"
 			"ERROR LOADING DATA FILE\n"
 			"\n"
@@ -1075,7 +1075,7 @@ int main(int argc, char **argv)
 	Audio_PlayVoice(VOICE_STOP);
 	GameLoop_GameIntroAnimationMenu();
 
-	printf("%s\n", String_Get_ByIndex(STR_THANK_YOU_FOR_PLAYING_DUNE_II));
+	Log_Info("%s\n", String_Get_ByIndex(STR_THANK_YOU_FOR_PLAYING_DUNE_II));
 
 	PrepareEnd();
 	exit(0);
