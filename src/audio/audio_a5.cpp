@@ -692,18 +692,20 @@ AudioA5_StoreSample(enum SampleID sampleID, uint8 file_index, uint32 file_size)
 {
 	char header[0x1A];
 	char ignore1;
-	unsigned int size = 0;
+	uint8 sizeLE[3];
+	unsigned int size;
 	unsigned char rate;
 	char ignore2;
 	uint8 *data = (uint8 *)al_malloc(file_size - 32);
 
 	File_Read(file_index, header, 0x1A); /* "Creative Voice File..." */
 	File_Read(file_index, &ignore1, 1); /* block type */
-	File_Read(file_index, &size, 3);
+	File_Read(file_index, sizeLE, 3);
 	File_Read(file_index, &rate, 1);
 	File_Read(file_index, &ignore2, 1);
 	File_Read(file_index, data, file_size - 32);
 
+	size = sizeLE[0] | (sizeLE[1] << 8) | (sizeLE[2] << 16);
 	unsigned int freq = 1000000 / (256 - rate);
 	ALLEGRO_AUDIO_DEPTH depth = ALLEGRO_AUDIO_DEPTH_UINT8;
 	ALLEGRO_CHANNEL_CONF chan_conf = ALLEGRO_CHANNEL_CONF_1;

@@ -18,6 +18,7 @@ Dune Dynasty is a continuation of the classic real-time strategy game Dune II by
 * `DuneLegacy/` and `OpenDUNE/` are the author's earlier 68k ports, kept for reference only; they are not part of the build.
 * Never put `src/` on the include path: `src/string.h` shadows the C library's `<string.h>`.
 * `AMIGA` is predefined and `int32_t` is `long` on this target; use the `uint32`/`int32` typedefs from `include/types.h`.
+* m68k is big-endian and Dune II's files are little-endian: read multi-byte values with `READ_LE_UINT16`/`READ_LE_UINT32` (`src/os/endian.h`), `File_Read_LE16`/`File_Read_LE32` or `fread_le_uint16`/`fread_le_uint32` (`src/file.h`), and write saves with `fwrite_le_*`. Never `fread` into a `uint16`/`uint32` or cast file data to `uint16 *`. Chunk IDs and lengths in IFF-style files (`FORM`, saves, `.EMC`, `.XMI`) are big-endian (`BETOH32`).
 
 ### Future plans
 

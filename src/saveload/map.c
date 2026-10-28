@@ -134,9 +134,9 @@ Map_Load2(FILE *fp, uint32 length)
 		uint8 houseID;
 		uint8 hasStructure;
 
-		if (fread(&packed,      sizeof(uint16), 1, fp) != 1) return false;
-		if (fread(&timeout,     sizeof(uint16), 1, fp) != 1) return false;
-		if (fread(&spriteID,    sizeof(uint16), 1, fp) != 1) return false;
+		if (!fread_le_uint16(&packed, fp)) return false;
+		if (!fread_le_uint16(&timeout, fp)) return false;
+		if (!fread_le_uint16(&spriteID, fp)) return false;
 		if (fread(&houseID,     sizeof(uint8),  1, fp) != 1) return false;
 		if (fread(&hasStructure,sizeof(uint8),  1, fp) != 1) return false;
 
@@ -175,9 +175,9 @@ Map_Save2(FILE *fp)
 				(f->hasStructure == t->hasStructure))
 			continue;
 
-		if (fwrite(&packed,         sizeof(uint16), 1, fp) != 1) return false;
-		if (fwrite(&timeout,        sizeof(uint16), 1, fp) != 1) return false;
-		if (fwrite(&spriteID,       sizeof(uint16), 1, fp) != 1) return false;
+		if (!fwrite_le_uint16(packed, fp)) return false;
+		if (!fwrite_le_uint16(timeout, fp)) return false;
+		if (!fwrite_le_uint16(spriteID, fp)) return false;
 		if (fwrite(&houseID,        sizeof(uint8),  1, fp) != 1) return false;
 		if (fwrite(&hasStructure,   sizeof(uint8),  1, fp) != 1) return false;
 	}

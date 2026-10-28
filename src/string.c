@@ -219,11 +219,11 @@ String_ReloadCampaignStrings(void)
 			continue;
 
 		void *buf = File_ReadWholeFile_Ex(SEARCHDIR_CAMPAIGN_DIR, filename);
-		uint16 count = min(40, (*(uint16 *)buf / 2));
+		uint16 count = min(40, READ_LE_UINT16((const uint8 *)buf) / 2);
 
 		for (unsigned int i = 0; i < count; i++) {
 			const bool compressed = true;
-			const char *src = (const char *)buf + ((const uint16 *)buf)[i];
+			const char *src = (const char *)buf + READ_LE_UINT16((const uint8 *)buf + i * 2);
 			char *dst;
 
 			if (strlen(src) <= 1)
