@@ -18,3 +18,30 @@ Dune Dynasty is a continuation of the classic real-time strategy game Dune II by
 * `DuneLegacy/` and `OpenDUNE/` are the author's earlier 68k ports, kept for reference only; they are not part of the build.
 * Never put `src/` on the include path: `src/string.h` shadows the C library's `<string.h>`.
 * `AMIGA` is predefined and `int32_t` is `long` on this target; use the `uint32`/`int32` typedefs from `include/types.h`.
+
+### Future plans
+
+#### Convert the game to pure C
+
+The only C++ is the audio code (about 5,200 lines; the rest of the game is C99):
+
+* Dune II's AdLib sound is two layers, and both are needed:
+  * `src/audio/adl/sound_adlib.cpp` is the player: ScummVM's port of Westwood's AdLib driver. It runs the `.ADL` files (`DUNE0.ADL`..., music and AdLib sound effects) and turns them into OPL register writes.
+  * `src/audio/adl/opl_mame.cpp` is the chip: MAME's YM3812 (OPL2) emulator, which turns the register writes into PCM.
+* The MIDI music is separate: `mt32mpu.c` plays the `.XMI` files and `midi_camd.c` sends them to camd.library.
+* Plan:
+  * Drop the DOSBox OPL emulator (`opl_dosbox.cpp`, `opl_impl.h`, `opl_inc.h`) and the chip switch (`fmopl.cpp`/`fmopl.h`, the `opl_mame` config option). MAME is already the default and is the lighter emulator.
+  * `opl_mame.cpp` → `opl_mame.c`: it is MAME's `fmopl.c` wrapped in a namespace and one template (`CLIP`).
+  * `sound_adlib.cpp` → `sound_adlib.c`, the main work:
+    * `AdLibDriver` and `SoundAdLibPC` become structs passed by pointer.
+    * The member function pointer tables (opcodes, update callbacks, parser opcodes) become plain function pointer tables.
+    * `Channel &` and `uint8 *&` become pointers, and `std::min` a macro.
+    * Remove `getSubsongs()`: Dune Legacy's SDL_mixer path, unused.
+  * `audio_a5.cpp` → `audio_a5.c`: `new`/`delete` become `malloc`/`free`.
+  * Then drop the C++ nature and libstdc++ from the Eclipse project and link with the C linker.
+* Verify the AdLib conversion byte for byte. Before converting, a host program renders every `.ADL` track and sound effect to raw PCM; after converting, the output must be identical.
+* Best done before or with the wrapper's SDL2 audio module, since `audio_a5` gets reworked then anyway.
+
+#### Audio mixing rate
+
+Mix at 22 kHz, 16-bit integer. `audio_a5.cpp` sets up Allegro's voice and mixer at 44.1 kHz with a float mixer, which is too heavy for a 68060 on top of OPL emulation. Change that when the wrapper's audio module goes onto SDL2 and AHI. Neither music set plays until that module works: the AdLib PCM goes through the voice and mixer, and MIDI only starts after `al_install_audio()`, `al_create_voice()` and `al_create_mixer()` succeed.
