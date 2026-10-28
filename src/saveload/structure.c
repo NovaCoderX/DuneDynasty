@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "saveload.h"
+#include "../file.h"
 #include "../pool/pool.h"
 #include "../pool/structure.h"
 #include "../structure.h"
@@ -184,7 +185,7 @@ SaveLoad_Structure_BuildQueue(void *object, uint32 value, bool loading)
 	else if (loading) {
 		uint32 count;
 
-		if (fread(&count, sizeof(uint32), 1, fp) != 1)
+		if (!fread_le_uint32(&count, fp))
 			return 0;
 
 		size += sizeof(count);
@@ -203,7 +204,7 @@ SaveLoad_Structure_BuildQueue(void *object, uint32 value, bool loading)
 	else {
 		uint32 count = BuildQueue_Count(&s->queue, 0xFFFF);
 
-		if (fwrite(&count, sizeof(uint32), 1, fp) != 1)
+		if (!fwrite_le_uint32(count, fp))
 			return 0;
 
 		size += sizeof(count);

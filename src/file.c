@@ -306,7 +306,7 @@ _File_OpenInDir(enum SearchDirectory dir, const char *filename, uint8 mode)
 			uint32 pakPosition;
 			uint16 i;
 
-			if (fread(&pakPosition, sizeof(uint32), 1, s_file[fileIndex].fp) != 1) {
+			if (!fread_le_uint32(&pakPosition, s_file[fileIndex].fp)) {
 				fclose(s_file[fileIndex].fp);
 				s_file[fileIndex].fp = NULL;
 				return FILE_INVALID;
@@ -635,6 +635,12 @@ File_ReadWholeFile_Ex(enum SearchDirectory dir, const char *filename)
 	length = File_GetSize(index);
 
 	buffer = malloc(length + 1);
+	if (buffer == NULL) {
+		Log_Error("Out of memory reading %s (%lu bytes)\n", filename, (unsigned long)length);
+		File_Close(index);
+		return NULL;
+	}
+
 	File_Read(index, buffer, length);
 
 	/* In case of text-files it can be very important to have a \0 at the end */
