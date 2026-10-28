@@ -17,8 +17,8 @@ cd ../amiga_build && make       # amiga_build/DuneDynasty
 ```
 
 The Allegro 5 library is being implemented on SDL2 one module at a time;
-system, timers, event queues, keyboard and mouse work, the rest are still
-stubs. See
+system, timers, event queues, keyboard, mouse and config files work,
+the rest are still stubs. See
 [allegro5_wrapper/README.md](allegro5_wrapper/README.md).
 
 ### Build configuration

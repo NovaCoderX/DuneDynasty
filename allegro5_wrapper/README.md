@@ -120,6 +120,16 @@ pump again for every event.
 so they are still stubs. Input only arrives once there is a window: SDL2's
 video driver reads it from the window's IDCMP port.
 
+### Configuration files (`config.c`)
+
+Plain C on stdio, reading and writing Allegro's format: `[section]`
+headers, `key=value` lines (trimmed), and a global section before the
+first header. Comments and blank lines are kept where they are, so the
+game saving `dunedynasty.cfg` changes only the values it sets. A key the
+program adds goes after the last key of its section, and a new section
+goes at the end after a blank line. Line endings are read either way and
+written as LF.
+
 ## How the stubs behave
 
 Each stub does nothing and returns a failure value: `false`, `NULL`, `0` or
@@ -137,7 +147,6 @@ stderr if there is none. Dune Dynasty registers one that sends the trace
 to its log:
 
 ```
-allegro5 stub: al_load_config_file()
 allegro5 stub: al_set_new_display_flags()
 allegro5 stub: al_set_new_display_option()
 allegro5 stub: al_create_display()
@@ -173,7 +182,7 @@ caller's state:
 | `mouse.c` | mouse.h, mouse_cursor.h | 8 | 2 SDL2, 6 stubs (warp, cursors) |
 | `threads.c` | threads.h | 5 | stubs |
 | `path.c` | path.h | 9 | stubs |
-| `config.c` | config.h | 7 | stubs |
+| `config.c` | config.h | 7 | plain C |
 | `file.c` | file.h | 9 | stubs |
 | `fshook.c` | fshook.h | 8 | stubs |
 | `primitives.c` | allegro_primitives.h | 5 | stubs |
@@ -221,7 +230,7 @@ input events' `display` field should point at it.
 
 `threads.c` is small and is what Dune Dynasty's MIDI music runs on.
 Several Allegro modules are plain C and could be compiled from the
-5.2.11.3 sources instead of rewritten: `path.c`, `config.c`, `utf8.c`
+5.2.11.3 sources instead of rewritten: `path.c`, `utf8.c`
 with `misc/bstrlib.c`, `file.c`, `file_stdio.c`, `fshook_stdio.c`,
 `transformations.c` and the memfile addon. They need the `internal/`
 headers, which are already in the Allegro5 repository. The display,
